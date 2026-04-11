@@ -1,3 +1,26 @@
+# Ambientes Virtuais (Pasta .venv)
 .venv/
+venv/
+env/
+ENV/
+
+# Configurações do VS Code
 .vscode/
+
+# Python (Arquivos compilados e cache)
 __pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Banco de Dados (SQLite local)
+db.sqlite3
+
+# Arquivos de log e temporários
+*.log
+.DS_Store
+
+# Django (Arquivos estáticos e de mídia locais)
+local_settings.py
+static/
+media/
