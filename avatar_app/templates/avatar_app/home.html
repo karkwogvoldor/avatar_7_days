@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Personagens Avatar</title>
+    <style>
+        /* Fonte serifada para ficar igualzinho ao seu print */
+        body {
+            font-family: "Times New Roman", Times, serif;
+            padding: 20px;
+        }
+        li {
+            margin-bottom: 15px; /* Dá um espacinho entre cada personagem */
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Personagens Traduzidos</h2>
+    
+    <ul>
+        {% for p in personagens %}
+            <li>
+                <strong>Nome:</strong> {{ p.nome }} <br>
+                <strong>Afiliação:</strong> {{ p.afiliacao }} <br>
+                <strong>Aliados:</strong> {{ p.aliados }} <br>
+                <strong>Inimigos:</strong> {{ p.inimigos }}
+                <hr> 
+            </li>
+        {% empty %}
+            <li>Nenhum personagem cadastrado ainda. Vá no /admin e crie alguns!</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
