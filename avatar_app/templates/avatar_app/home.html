@@ -1,11 +1,42 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<div class="container mt-5">
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personagens Avatar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .avatar-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            background-color: #dee2e6;
+        }
+        .no-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background-color: #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5 mb-5">
     <h2 class="text-center mb-4">Personagens Traduzidos</h2>
-    
-    <table class="table table-striped table-hover table-bordered">
+
+    <table class="table table-striped table-hover table-bordered align-middle">
         <thead class="table-dark">
             <tr>
+                <th>Foto</th>
                 <th>Nome</th>
                 <th>Afiliação</th>
                 <th>Aliados</th>
@@ -15,12 +46,25 @@
         <tbody>
             {% for personagem in personagens %}
             <tr>
-                <td>{{ personagem.nome }}</td>
-                <td>{{ personagem.afiliacao }}</td>
-                <td>{{ personagem.aliados }}</td>
-                <td>{{ personagem.inimigos }}</td>
+                <td style="width: 90px;">
+                    {% if personagem.foto_url %}
+                        <img src="{{ personagem.foto_url }}"
+                            alt="{{ personagem.nome }}"
+                            class="avatar-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="no-photo" style="display:none;">Sem foto</div>
+                    {% else %}
+                        <div class="no-photo">Sem foto</div>
+                    {% endif %}
+                </td>
+                <td class="fw-bold">{{ personagem.nome }}</td>
+                <td>{{ personagem.afiliacao|default:"—" }}</td>
+                <td>{{ personagem.aliados|default:"Nenhum" }}</td>
+                <td>{{ personagem.inimigos|default:"Nenhum" }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+</body>
+</html>

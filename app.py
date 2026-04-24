@@ -1,77 +1,182 @@
 import os
 import django
-import json
 import requests
-import time # <-- Adicionado para a pausa
-from googletrans import Translator
+import re
+from constants import NACOES, CARGOS, NOMES_BLOQUEADOS, DICIONARIO_AVATAR, LUGARES_AVATAR, PARENTESCO_AVATAR
 
-# --- CONFIGURAÇÃO PARA O DJANGO RECONHECER O SCRIPT ---
+# --- CONFIGURAÇÃO DJANGO ---
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'avatar_7_days.settings')
 django.setup()
-from avatar_app.models import Personagem 
-# -----------------------------------------------------
+from avatar_app.models import Personagem
+
+
+# ---------------------------------------------------------------------------
+# TODOS OS DICIONÁRIOS UNIDOS — ordem de prioridade
+# ---------------------------------------------------------------------------
+TODOS_OS_TERMOS: dict = {
+    **DICIONARIO_AVATAR,
+    **NACOES,
+    **LUGARES_AVATAR,
+    **CARGOS,
+    **PARENTESCO_AVATAR,
+}
+
+
+# ---------------------------------------------------------------------------
+# TRADUÇÃO OFFLINE
+# ---------------------------------------------------------------------------
+
+def eh_nome_proprio(termo: str) -> bool:
+    """Verifica se o termo é um nome próprio bloqueado."""
+    termo_limpo = termo.strip()
+    for nome in NOMES_BLOQUEADOS:
+        if nome.lower() == termo_limpo.lower():
+            return True
+    return False
+
+
+def traduzir_termo(termo: str) -> str:
+    """
+    Tenta traduzir um termo usando os dicionários locais.
+    Prioridade:
+    1. Match exato no dicionário completo
+    2. Nome próprio bloqueado → retorna como está
+    3. Match parcial — substitui subtextos conhecidos dentro do termo
+    4. Sem tradução → retorna original
+    """
+    if not termo or not termo.strip():
+        return ""
+
+    termo = termo.strip()
+
+    # 1. Match exato
+    if termo in TODOS_OS_TERMOS:
+        return TODOS_OS_TERMOS[termo]
+
+    # 2. Nome próprio — não traduz
+    if eh_nome_proprio(termo):
+        return termo
+
+    # 3. Match parcial — substitui partes conhecidas dentro do texto
+    resultado = termo
+    for en, pt in sorted(TODOS_OS_TERMOS.items(), key=lambda x: len(x[0]), reverse=True):
+        if en.lower() in resultado.lower():
+            resultado = re.sub(re.escape(en), pt, resultado, flags=re.IGNORECASE)
+
+    if resultado != termo:
+        return resultado.strip()
+
+    # 4. Sem tradução — retorna o original
+    return termo
+
+
+def traduzir_lista(lista: list) -> str:
+    """Traduz uma lista de aliados/inimigos e retorna string limpa."""
+    itens = [i.strip() for i in lista if i and i.strip()]
+    if not itens:
+        return "Nenhum"
+    traduzidos = [traduzir_termo(i) for i in itens]
+    return ", ".join(traduzidos)
+
+
+def separar_afiliacoes_coladas(texto_raw: str) -> str:
+    """
+    Separa afiliações grudadas em texto corrido buscando termos conhecidos.
+    """
+    if not texto_raw:
+        return ""
+
+    termos_busca = (
+        list(NACOES.keys()) +
+        list(CARGOS.keys()) +
+        list(DICIONARIO_AVATAR.keys()) +
+        list(LUGARES_AVATAR.keys()) +
+        ["military", "army", "navy", "police", "forces"]
+    )
+
+    encontrados = []
+    for termo in termos_busca:
+        if termo.lower() in texto_raw.lower() and termo not in encontrados:
+            encontrados.append(termo)
+
+    if not encontrados:
+        return texto_raw
+
+    encontrados_limpos = []
+    for e in sorted(encontrados, key=len, reverse=True):
+        if not any(e.lower() in outro.lower() for outro in encontrados_limpos if e != outro):
+            encontrados_limpos.append(e)
+
+    return ", ".join(encontrados_limpos)
+
+
+def limpar_lista(lista: list) -> list:
+    """Remove itens vazios e espaços extras."""
+    return [i.strip() for i in lista if i and i.strip()]
+
+
+# ---------------------------------------------------------------------------
+# IMPORTAÇÃO PRINCIPAL
+# ---------------------------------------------------------------------------
 
 def importar_e_traduzir():
-    translator = Translator()
     api_url = 'https://last-airbender-api.fly.dev/api/v1/characters?perPage=1000'
-    
+
     try:
+        print("Buscando dados da API Avatar...")
         response = requests.get(api_url)
         lista_personagens = response.json()
-        
+        print(f"Total de personagens encontrados: {len(lista_personagens)}")
+
         for p in lista_personagens:
-            # 1. TRATANDO O NOME
-            nome_original = p.get('name', 'Sem nome')
-            
-            # Palavras que indicam que o nome deve permanecer original
-            palavras_bloqueadas = ['and', 'ping', 'poi', 'momo', 'appa', 'the']
-            
-            # Verifica se alguma palavra bloqueada está no nome
-            contem_bloqueada = any(word.lower() in nome_original.lower() for word in palavras_bloqueadas)
 
-            # Só traduz se tiver mais de 2 palavras E NÃO contiver palavras bloqueadas
-            if len(nome_original.split()) > 2 and not contem_bloqueada:
-                try:
-                    nome_pt = translator.translate(nome_original, dest='pt').text
-                except:
-                    nome_pt = nome_original 
+            # 1. NOME
+            nome_original = p.get('name', '') or ''
+            if eh_nome_proprio(nome_original.strip()):
+                nome_pt = nome_original.strip()
             else:
-                nome_pt = nome_original
+                nome_pt = traduzir_termo(nome_original) or "Sem nome"
 
-            # 2. TRATANDO A AFILIAÇÃO (Com proteção)
-            afiliacao_original = p.get('affiliation') or 'Nenhum' # O "or" garante que vazios virem "Nenhum"
-            try:
-                afiliacao_pt = translator.translate(afiliacao_original, dest='pt').text
-            except:
-                afiliacao_pt = afiliacao_original
+            # 2. AFILIAÇÃO
+            afiliacao_raw = p.get('affiliation') or ""
+            if afiliacao_raw.strip() in TODOS_OS_TERMOS:
+                afiliacao_pt = TODOS_OS_TERMOS[afiliacao_raw.strip()]
+            else:
+                afiliacao_separada = separar_afiliacoes_coladas(afiliacao_raw)
+                afiliacao_pt = traduzir_termo(afiliacao_separada)
 
-            # 3. TRATANDO OS INIMIGOS (Com proteção)
-            inimigos_original = ", ".join(p.get('enemies', []))
-            inimigos_pt = inimigos_original
-            if inimigos_original:
-                try:
-                    inimigos_pt = translator.translate(inimigos_original, dest='pt').text
-                except:
-                    pass # Se falhar, continua com o original
-            
-            # 4. TRATANDO OS ALIADOS (Adicione isto)
-            # Transforma a lista ['Aang', 'Appa'] em texto "Aang, Appa"
-            aliados_texto = ", ".join(p.get('allies', []))
+            # 3. ALIADOS E INIMIGOS
+            aliados_pt = traduzir_lista(p.get('allies', []))
+            inimigos_pt = traduzir_lista(p.get('enemies', []))
 
-            # SALVANDO NO BANCO DO DJANGO
-            Personagem.objects.get_or_create(
-                nome=nome_pt,
-                afiliacao=afiliacao_pt,
-                aliados=aliados_texto or "Nenhum",
-                inimigos=inimigos_pt or "Nenhum"
+            # 4. FOTO
+            foto_url_original = p.get('photoUrl')
+            foto_url_final = (
+                ""
+                if not foto_url_original or foto_url_original == "None"
+                else foto_url_original
             )
-            print(f"Salvo: {nome_pt}")
-            
-            # Pausa de meio segundo para o Google não bloquear você
-            time.sleep(0.5)
+
+            # 5. SALVA NO BANCO
+            personagem, created = Personagem.objects.update_or_create(
+                nome=nome_pt,
+                defaults={
+                    'afiliacao': afiliacao_pt,
+                    'aliados': aliados_pt,
+                    'inimigos': inimigos_pt,
+                    'foto_url': foto_url_final,
+                }
+            )
+
+            status = "Criado" if created else "Atualizado"
+            print(f"  [{status}] {nome_pt}")
+
+        print("\nImportação concluída com sucesso!")
 
     except Exception as e:
         print(f"Erro geral: {e}")
+        raise
+
 
 if __name__ == '__main__':
     importar_e_traduzir()
