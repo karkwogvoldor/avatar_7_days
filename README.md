@@ -13,8 +13,8 @@
 
 | Main Characters | Secondary Characters |
 |---|---|
-| ![Main](https://imgur.com/Ar7d9BI) | ![Secondary](https://imgur.com/5ciYqT3) |
-| ![Azula](https://imgur.com/biooaAt) | ![Zuko](https://imgur.com/flzMdDG) |
+| ![Main](https://imgur.com/Ar7d9BI.png) | ![Secondary](https://imgur.com/5ciYqT3.png) |
+| ![Azula](https://imgur.com/biooaAt.png) | ![Zuko](https://imgur.com/flzMdDG.png) |
 
 > Characters with photos appear first. Toggle between 🇧🇷 Portuguese and 🇺🇸 English at any time.
 
