@@ -6,65 +6,284 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personagens Avatar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .avatar-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 10px;
-            object-fit: cover;
-            background-color: #dee2e6;
+        :root {
+            --fire: #c0392b;
+            --fire-light: #e74c3c;
+            --earth: #7d6608;
+            --water: #1a5276;
+            --air: #a9cce3;
+            --gold: #d4ac0d;
+            --dark: #1a1a1a;
+            --card-bg: #fdf6e3;
         }
-        .no-photo {
-            width: 70px;
-            height: 70px;
-            border-radius: 10px;
-            background-color: #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #6c757d;
+
+        body {
+            background-color: #f5f0e8;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8b89a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            font-family: 'Crimson Text', serif;
+            color: var(--dark);
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c1810 50%, #1a1a1a 100%);
+            border-bottom: 3px solid var(--gold);
+            padding: 2rem 0 1.5rem;
             text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--fire), var(--gold), var(--earth), transparent);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(212,172,13,0.4);
+            margin: 0;
+        }
+
+        .subtitle {
+            color: #a89060;
+            font-style: italic;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        .lang-toggle {
+            display: inline-flex;
+            background: #2c2c2c;
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            padding: 3px;
+            margin-top: 1rem;
+        }
+
+        .lang-btn {
+            padding: 6px 20px;
+            border-radius: 25px;
+            border: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: #888;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .search-bar {
+            max-width: 500px;
+            margin: 1.5rem auto 0;
+        }
+
+        .search-bar input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #555;
+            color: #ddd;
+            border-radius: 25px;
+            padding: 8px 20px;
+            width: 100%;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+        }
+
+        .search-bar input::placeholder { color: #666; }
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .container { max-width: 1400px; }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            font-size: 0.85rem;
+            color: #888;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+
+        .stats-bar span { color: var(--dark); font-weight: 600; }
+
+        table { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.08); }
+
+        thead { background: linear-gradient(135deg, #2c1810, #1a1a1a); }
+
+        thead th {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            font-weight: 600;
+            padding: 14px 16px;
+            border: none;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0e8d8;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover { background: #fef9ef; }
+        tbody tr:last-child { border-bottom: none; }
+
+        td { padding: 12px 16px; vertical-align: middle; font-size: 1rem; border: none; }
+
+        .avatar-img {
+            width: 60px; height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .no-photo {
+            width: 60px; height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #e8dcc8, #d4c5a9);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: #999; text-align: center;
+            border: 2px solid #d4c5a9;
+        }
+
+        .nome-cell { font-weight: 600; font-size: 1.05rem; color: #2c1810; }
+        .afil-cell { color: #555; font-size: 0.95rem; }
+        .list-cell { color: #666; font-size: 0.9rem; line-height: 1.4; }
+
+        .hidden-row { display: none; }
+
+        .nation-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 1px 7px;
+            border-radius: 10px;
+            margin-left: 6px;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
-<div class="container mt-5 mb-5">
-    <h2 class="text-center mb-4">Personagens Traduzidos</h2>
 
-    <table class="table table-striped table-hover table-bordered align-middle">
-        <thead class="table-dark">
+<header>
+    <h1>⚡ AVATAR ⚡</h1>
+    <div class="subtitle">Enciclopédia de Personagens</div>
+    <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-pt" onclick="setLang('pt')">🇧🇷 PT</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇺🇸 EN</button>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Buscar personagem..." oninput="filtrar()">
+    </div>
+</header>
+
+<div class="container mt-4 mb-5">
+    <div class="stats-bar">
+        <span id="count">{{ personagens|length }}</span> personagens &nbsp;|&nbsp;
+        Idioma: <span id="lang-label">Português</span>
+    </div>
+
+    <table class="table mb-0" id="tabelaPersonagens">
+        <thead>
             <tr>
-                <th>Foto</th>
-                <th>Nome</th>
-                <th>Afiliação</th>
-                <th>Aliados</th>
-                <th>Inimigos</th>
+                <th>FOTO</th>
+                <th>NOME</th>
+                <th>AFILIAÇÃO</th>
+                <th>ALIADOS</th>
+                <th>INIMIGOS</th>
             </tr>
         </thead>
         <tbody>
-            {% for personagem in personagens %}
+            {% for p in personagens %}
+            {% if forloop.counter0 == total_principais and total_principais > 0 %}
             <tr>
-                <td style="width: 90px;">
-                    {% if personagem.foto_url %}
-                        <img src="{{ personagem.foto_url }}"
-                            alt="{{ personagem.nome }}"
-                            class="avatar-img"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="no-photo" style="display:none;">Sem foto</div>
+                <td colspan="5" style="background: linear-gradient(135deg, #2c1810, #1a1a1a); padding: 10px 16px; border: none;">
+                    <span style="font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 3px; color: #888;">
+                        ── PERSONAGENS SECUNDÁRIOS ──
+                    </span>
+                </td>
+            </tr>
+            {% endif %}
+            <tr class="personagem-row"
+                data-nome-pt="{{ p.nome|lower }}"
+                data-nome-en="{{ p.nome_en|lower }}">
+                <td>
+                    {% if p.foto_url %}
+                        <img src="{{ p.foto_url }}" alt="{{ p.nome }}" class="avatar-img"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <div class="no-photo" style="display:none;">—</div>
                     {% else %}
-                        <div class="no-photo">Sem foto</div>
+                        <div class="no-photo">—</div>
                     {% endif %}
                 </td>
-                <td class="fw-bold">{{ personagem.nome }}</td>
-                <td>{{ personagem.afiliacao|default:"—" }}</td>
-                <td>{{ personagem.aliados|default:"Nenhum" }}</td>
-                <td>{{ personagem.inimigos|default:"Nenhum" }}</td>
+                <td class="nome-cell">
+                    <span class="txt-pt">{{ p.nome|default:"—" }}</span>
+                    <span class="txt-en" style="display:none;">{{ p.nome_en|default:"—" }}</span>
+                </td>
+                <td class="afil-cell">
+                    <span class="txt-pt">{{ p.afiliacao|default:"—" }}</span>
+                    <span class="txt-en" style="display:none;">{{ p.afiliacao_en|default:"—" }}</span>
+                </td>
+                <td class="list-cell">
+                    <span class="txt-pt">{{ p.aliados|default:"Nenhum" }}</span>
+                    <span class="txt-en" style="display:none;">{{ p.aliados_en|default:"None" }}</span>
+                </td>
+                <td class="list-cell">
+                    <span class="txt-pt">{{ p.inimigos|default:"Nenhum" }}</span>
+                    <span class="txt-en" style="display:none;">{{ p.inimigos_en|default:"None" }}</span>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+let currentLang = 'pt';
+
+function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.txt-pt').forEach(el => el.style.display = lang === 'pt' ? '' : 'none');
+    document.querySelectorAll('.txt-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+    document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('lang-label').textContent = lang === 'pt' ? 'Português' : 'English';
+    filtrar();
+}
+
+function filtrar() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('.personagem-row').forEach(row => {
+        const nome = currentLang === 'pt' ? row.dataset.nomePt : row.dataset.nomeEn;
+        const show = !q || nome.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('count').textContent = visible;
+}
+</script>
+
 </body>
 </html>
