@@ -45,6 +45,7 @@ avatar_7_days/
 ├── Procfile             # Configuração de execução no Railway (Gunicorn)
 ├── requirements.txt     # Dependências (Django, Gunicorn, Psycopg2)
 └── runtime.txt          # Versão do Python para o deploy
+```
 
 ## ⚙️ Funcionalidades Principais
 
@@ -66,11 +67,13 @@ Barra de pesquisa integrada que permite localizar personagens, termos de dobra o
 ```bash
 git clone https://github.com/karkwogvoldor/avatar_7_days.git
 cd avatar_7_days
+```
 
 ## ⚙️ Configuração do Ambiente
 
 ```bash
 python -m venv venv
+```
 
 # Ativar venv:
 # Windows: venv\Scripts\activate
@@ -82,6 +85,7 @@ pip install -r requirements.txt
 
 ```bash
 gunicorn setup.wsgi
+```
 
 ## 📄 Licença
 
