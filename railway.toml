@@ -1,3 +1,2 @@
 [deploy]
 startCommand = "gunicorn avatar_7_days.wsgi:application --bind 0.0.0.0:$PORT"
-releaseCommand = "python manage.py migrate && python app.py"
