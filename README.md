@@ -1,19 +1,15 @@
-# 🌊 Avatar: The Last Airbender — Tradutor & Lore
+# 🌊⚡ Avatar: The Last Airbender — Tradutor & Lore
+
+![Python](https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python)
+![Django](https://img.shields.io/badge/Django-6.0-green?style=flat-square&logo=django)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 Uma aplicação interativa focada no universo de Avatar, que oferece consultas ao Lore em dois idiomas, mecanismo de busca avançado e tradução temática.
 
 ## 🔗 Deploy Oficial
 Acesse o projeto online:  
 [https://avatar7days-production.up.railway.app/](https://avatar7days-production.up.railway.app/)
-
-## ⚡ Avatar 7 Days
-
-> Uma enciclopédia movida a Django sobre os personagens de Avatar: A Lenda de Aang e A Lenda de Korra — com suporte bilíngue, tradução inteligente offline e uma interface web limpa.
-
-![Python](https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python)
-![Django](https://img.shields.io/badge/Django-6.0-green?style=flat-square&logo=django)
-![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey?style=flat-square&logo=sqlite)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 ---
 
