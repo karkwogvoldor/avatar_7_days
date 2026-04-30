@@ -80,8 +80,9 @@ python -m venv venv
 Windows: venv\Scripts\activate
 Linux/Mac: source venv/bin/activate
 ```
-
+```bash
 pip install -r requirements.txt
+```
 
 ## 🚀 Execução com Gunicorn (Simulação de Produção)
 
